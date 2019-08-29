@@ -12,10 +12,12 @@ namespace testAuditNet
 
             var order = new Order();
 
-            using (AuditScope.Create("Order:Update", () => order, new { UserName = "cash" }))
+            using (var audit = AuditScope.Create("Order:Update", () => order, new { UserName = "cash" }))
             {
                 Console.WriteLine("Audit");
                 order.Status = EnumStatus.Finish;
+                
+                audit.Comment("commit");
             }
 
             AuditScope auditScope = null;
@@ -25,6 +27,7 @@ namespace testAuditNet
                 {
                     order.Status = EnumStatus.Start;
                 }
+                auditScope.Comment("01");
             }
             finally
             {
